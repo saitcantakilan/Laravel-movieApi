@@ -15,7 +15,7 @@ class MovieController extends Controller
      */
     public function index()
     {
-        return response(Movie::all(),200);
+        return response(Movie::with('director')->get(),200);
     }
 
     /**
@@ -35,15 +35,56 @@ class MovieController extends Controller
      * @param  \App\Models\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id,$start_year = null,$end_year = null)
     {
-        $movie = Movie::find($id);
-        if($movie)
-            return response($movie,200);
+        if(!is_null($start_year) && !is_null($end_year))
+        {
+            $movie = Movie::whereBetween('year',[$start_year,$end_year])->get();
+            if($movie)
+                return response($movie,200);
+            else
+                return response(['message' => 'Movies not found!'],404);
+        }
+        else if($id != "top10")
+        {
+            $movie = Movie::find($id);
+            if($movie)
+                return response($movie,200);
+            else
+                return response(['message' => 'Movie not found!'],404);
+
+        }
         else
-            return response(['message' => 'Movie not found!'],404);
+        {
+            $movie = Movie::take(10)->orderBy('imdb_score','DESC')->get();
+            if($movie)
+                return response($movie,200);
+            else
+                return response(['message' => 'Movies not found!'],404);
+        }
+
 
     }
+
+    public function showBetween($start_year = null,$end_year = null)
+    {
+        if(!is_null($start_year) && !is_null($end_year))
+        {
+            $movie = Movie::whereBetween('year',[$start_year,$end_year])->get();
+            if($movie)
+                return response($movie,200);
+            else
+                return response(['message' => 'Movies not found!'],404);
+        }
+        else
+            {
+
+            return response(['message' => 'Movies not found!'],404);
+        }
+
+
+    }
+
 
     /**
      * Update the specified resource in storage.

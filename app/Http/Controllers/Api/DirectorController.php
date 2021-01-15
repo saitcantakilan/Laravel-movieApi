@@ -15,7 +15,7 @@ class DirectorController extends Controller
      */
     public function index()
     {
-        //
+        return response(Director::with('movies')->get(),200);
     }
 
     /**
@@ -35,9 +35,23 @@ class DirectorController extends Controller
      * @param  \App\Models\Director  $director
      * @return \Illuminate\Http\Response
      */
-    public function show(Director $director)
+    public function show($id)
     {
-        //
+        $director = Director::find($id);
+        if($director)
+            return response($director,200);
+        else
+            return response(['message' => 'Director not found!'],404);
+
+    }
+    public function bestMovies($id)
+    {
+        $director = Director::find($id)->movies()->orderBy('imdb_score','DESC')->get();
+        if($director)
+            return response($director,200);
+        else
+            return response(['message' => 'Director not found!'],404);
+
     }
 
     /**

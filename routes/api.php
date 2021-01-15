@@ -23,3 +23,6 @@ Route::apiResources([
         'directors' => Api\DirectorController::class,
         'users' => Api\MovieController::class
 ]);
+
+Route::get('/movies/{start_year}/{end_year}','Api\MovieController@showBetween');
+Route::get('/directors/{id}/best10movie','Api\DirectorController@bestMovies');
