@@ -13,9 +13,28 @@ class MovieController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response(Movie::with('director')->get(),200);
+        $offset = $request->has('offset') ? $request->query('offset') : 0;
+        $limit = $request->has('limit') ? $request->query('limit') : 10;
+        //return response(Movie::with('director')->get(),200);
+        $qb = Movie::with('director');
+        if($request->has('title'))
+            $qb->where('title','like','%'.$request->query('title').'%');
+        if($request->has('category'))
+            $qb->where('category','like','%'.$request->query('category').'%');
+        if($request->has('country'))
+            $qb->where('country','like','%'.$request->query('country').'%');
+        if($request->has('directorID'))
+            $qb->where('director_id','=',$request->query('directorID'));
+
+        if($request->has('sortBy'))
+            $qb->orderBy($request->query('sortBy'),$request->query('sort','DESC'));
+
+
+        $data = $qb->offset($offset)->limit($limit)->get();
+        return response($data,200);
+
     }
 
     /**
@@ -51,7 +70,7 @@ class MovieController extends Controller
     {
         if(!is_null($start_year) && !is_null($end_year))
         {
-            $movie = Movie::whereBetween('year',[$start_year,$end_year])->get();
+            $movie = Movie::with('director')->whereBetween('year',[$start_year,$end_year])->get();
             if($movie)
                 return response($movie,200);
             else
@@ -59,7 +78,7 @@ class MovieController extends Controller
         }
         else if($id != "top10")
         {
-            $movie = Movie::find($id);
+            $movie = Movie::with('director')->find($id);
             if($movie)
                 return response($movie,200);
             else
@@ -68,7 +87,7 @@ class MovieController extends Controller
         }
         else
         {
-            $movie = Movie::take(10)->orderBy('imdb_score','DESC')->get();
+            $movie = Movie::with('director')->take(10)->orderBy('imdb_score','DESC')->get();
             if($movie)
                 return response($movie,200);
             else
@@ -82,7 +101,7 @@ class MovieController extends Controller
     {
         if(!is_null($start_year) && !is_null($end_year))
         {
-            $movie = Movie::whereBetween('year',[$start_year,$end_year])->get();
+            $movie = Movie::with('director')->whereBetween('year',[$start_year,$end_year])->get();
             if($movie)
                 return response($movie,200);
             else
