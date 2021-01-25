@@ -26,7 +26,19 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $movie = new Movie;
+        $movie->director_id = $request->director_id;
+        $movie->title = $request->title;
+        $movie->category = $request->category;
+        $movie->country = $request->country;
+        $movie->year = $request->year;
+        $movie->imdb_score = $request->imdb_score;
+        $movie->save();
+
+        return response([
+           'data' => $movie,
+           'message' => 'Movie created.'
+        ],201);
     }
 
     /**
@@ -95,7 +107,22 @@ class MovieController extends Controller
      */
     public function update(Request $request, Movie $movie)
     {
-        //
+        //$input  = $request->all();
+        //$movie->update($input);
+        $movie->director_id = $request->director_id;
+        $movie->title = $request->title;
+        $movie->category = $request->category;
+        $movie->country = $request->country;
+        $movie->year = $request->year;
+        $movie->imdb_score = $request->imdb_score;
+        $movie->save();
+
+
+        return response([
+            'data' => $movie,
+            'message' => 'Movie updated.'
+        ],200);
+
     }
 
     /**
@@ -106,6 +133,10 @@ class MovieController extends Controller
      */
     public function destroy(Movie $movie)
     {
-        //
+        $movie->delete();
+
+        return response([
+            'message' => 'Movie deleted.'
+        ],200);
     }
 }
